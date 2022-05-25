@@ -13,7 +13,7 @@ from .helper import *
 __all__ = ["game_loop"]
 
 TILE_NUM = 10
-TILE_SIZE = 50
+TILE_SIZE = 100
 
 
 class Tile:
@@ -28,6 +28,12 @@ class Tile:
         if self.collapsed():
             surf.blit(pygame.transform.scale(self.possible_nodes[0].img, (TILE_SIZE, TILE_SIZE)),
                       (self.x * TILE_SIZE, self.y * TILE_SIZE))
+        else:
+            e = 3
+            s = TILE_SIZE // e
+            for i in range(0, min(e**2, len(self.possible_nodes))):
+                surf.blit(pygame.transform.scale(self.possible_nodes[i].img, (s, s)),
+                          (self.x * TILE_SIZE + s * (i % e), self.y * TILE_SIZE + s * (i // e)))
 
 
 def in_range(x, y):
@@ -53,8 +59,10 @@ def propagate(tiles, x, y, /, *,  visited=None):
                (1, 0, "west_rule"),
                (0, 1, "north_rule"),
                (-1, 0, "east_rule"))
+    changed = False
     for i, j, rule in counter:
         if in_range(x + i, y + j):
+            # visited.append((x + i, y + j))
             n_tile = get_tile(tiles, x + i, y + j)
             pos_copy = n_tile.possible_nodes[:]
             for node in pos_copy:
@@ -65,10 +73,20 @@ def propagate(tiles, x, y, /, *,  visited=None):
                         break
                 if not allowed:
                     n_tile.possible_nodes.remove(node)
+                    changed = True
             if not n_tile.possible_nodes:
                 print("uh oh")
+                pygame.display.get_surface().fill("black")
+                for t in tiles:
+                    t.draw(pygame.display.get_surface())
+                pygame.display.update()
+                while pygame.event.wait().type != KEYDOWN:
+                    ...
                 for index, tile in enumerate(tiles):
                     tiles[index] = Tile(tile.x, tile.y)
+
+    # if not changed:
+    #     visited.append((x, y))
 
     for i, j, _ in counter:
         if in_range(x + i, y + j) and (x + i, y + j) not in visited:
@@ -86,6 +104,9 @@ def game_loop():
     clock = pygame.time.Clock()
 
     tiles = [Tile(i % tile_num, i // tile_num) for i in range(tile_num**2)]
+
+    stack_index = -1
+    stack = []
 
     while True:
         for event in pygame.event.get():

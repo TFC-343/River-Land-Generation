@@ -7,6 +7,7 @@ import pygame
 
 @dataclasses.dataclass
 class Rule:
+    """Flag class to store connection rules"""
     name: str
 
 
@@ -19,6 +20,7 @@ PathV = Rule("PathV")
 
 @dataclasses.dataclass
 class Rules:
+    """stores all rules for a node"""
     north: Rule
     east: Rule
     south: Rule
@@ -38,12 +40,14 @@ class Rules:
 
 
 class Node:
+    """store an image and associated rules"""
     def __init__(self, img, n, e, s, w):
         self.img = pygame.image.load(img)
         self.rules = Rules(n, e, s, w)
 
 
 def get_nodes():
+    """returns a list with all nodes"""
     nodes = [
         Node("WaveFunctionCollapse/images/0.png", Blank, Blank, Blank, Blank),  # blank tile
         Node("WaveFunctionCollapse/images/0a.png", Blank, Blank, Blank, Blank),  # blank tile
@@ -74,4 +78,5 @@ def get_nodes():
 
 
 def rand_colour():
+    """generates a random pygame colour"""
     return pygame.Color(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))

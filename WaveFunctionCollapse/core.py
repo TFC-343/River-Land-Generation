@@ -1,5 +1,3 @@
-import collections
-import copy
 import random
 import sys
 
@@ -9,8 +7,9 @@ from pygame.locals import *
 
 from .helper import *
 
-
 __all__ = ["game_loop"]
+__author__ = "TFC343"
+__version__ = "v1.1.0"
 
 TILE_NUM = 10
 TILE_SIZE = 50
